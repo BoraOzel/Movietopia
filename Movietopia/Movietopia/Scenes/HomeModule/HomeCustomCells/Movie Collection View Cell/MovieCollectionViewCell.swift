@@ -23,9 +23,10 @@ class MovieCollectionViewCell: UICollectionViewCell {
     override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
         let targetSize = CGSize(width: layoutAttributes.frame.width,
                                 height: UIView.layoutFittingExpandedSize.height)
-        layoutAttributes.frame.size = contentView.systemLayoutSizeFitting(targetSize,
-                                                                          withHorizontalFittingPriority: .required,
-                                                                          verticalFittingPriority: .fittingSizeLevel)
+        layoutAttributes.frame.size =
+        contentView.systemLayoutSizeFitting(targetSize,
+                                            withHorizontalFittingPriority: .required,
+                                            verticalFittingPriority: .fittingSizeLevel)
         return layoutAttributes
     }
     

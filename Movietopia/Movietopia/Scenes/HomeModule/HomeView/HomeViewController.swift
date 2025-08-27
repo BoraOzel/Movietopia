@@ -7,8 +7,10 @@
 
 import UIKit
 
-protocol HomeViewControllerInterface: AnyObject {
+protocol HomeViewControllerInterface: AnyObject, SpinnerDisplayable {
     func configureVC()
+    func setCollectionViewRegister()
+    func reloadCollectionView()
 }
 
 class HomeViewController: UIViewController {
@@ -19,35 +21,36 @@ class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.view = self
         setCustomFlowLayout(lineSpacing: 10,
-                            interItemSpacing: 0,
+                            interItemSpacing: 10,
                             sectionInset: .zero,
-                            estimatedItemSize: .zero)
+                            estimatedItemSize: nil)
         configureVC()
-        Task{ viewModel.viewDidLoad() }
+        setCollectionViewRegister()
+        
+        Task {
+            showProgress()
+            viewModel.viewDidLoad()
+            collectionView.reloadData()
+            removeProgress()
+        }
     }
 }
 
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.movieItems.count + (viewModel.isLoading ? 1 : 0)
+        return viewModel.movieItems.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        if indexPath.row < viewModel.movieItems.count {
-            let cell: MovieCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "\(MovieCollectionViewCell.self)",
-                                                                                   for: indexPath) as! MovieCollectionViewCell
-            cell.configure(data: viewModel.movieItems[indexPath.item])
-            cell.layer.borderWidth = 1
-            cell.layer.cornerRadius = 20
-            cell.layer.borderColor = UIColor.lightGray.cgColor
-            return cell
-        } else {
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "\(MovieLoadingCollectionViewCell.self)",
-                                                          for: indexPath) as! MovieLoadingCollectionViewCell
-            return cell
-        }
+        guard let cell: MovieCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "\(MovieCollectionViewCell.self)",
+                                                                                     for: indexPath) as? MovieCollectionViewCell
+        else { return UICollectionViewCell() }
+        cell.configure(data: viewModel.movieItems[indexPath.item])
+        cell.layer.borderWidth = 1
+        cell.layer.cornerRadius = 20
+        cell.layer.borderColor = UIColor.lightGray.cgColor
+        return cell
     }
 }
 
@@ -56,42 +59,31 @@ extension HomeViewController: UICollectionViewDelegate {
         
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard !viewModel.isLoading else { return }
-
-        let y = scrollView.contentOffset.y
-        let contentHeight = scrollView.contentSize.height
-        let h = scrollView.frame.size.height
-
-        if y > contentHeight - h * 1.1 {   // alta %10 kala
-            Task { await viewModel.getMovies() }
-        }
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let threshold = max(0, viewModel.movieItems.count - 5)
+           if indexPath.item >= threshold {
+               Task { await viewModel.getMovies() }
+           }
     }
 }
 
 extension HomeViewController: HomeViewControllerInterface {
-    func configureVC() {
+    func setCollectionViewRegister() {
         collectionView.register(UINib(nibName: "\(MovieCollectionViewCell.self)", bundle: nil),
                                 forCellWithReuseIdentifier: "MovieCollectionViewCell")
-        collectionView.register(UINib(nibName: "\(MovieLoadingCollectionViewCell.self)", bundle: nil),
-                                forCellWithReuseIdentifier: "MovieLoadingCollectionViewCell")
+    }
+    
+    func reloadCollectionView() {
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
+    }
+    
+    func configureVC() {
+        viewModel.view = self
     }
 }
 
 extension HomeViewController: DynamicFlowLayoutCustomizable {
     typealias CustomLayout = SingleColumnDynamicHeightFlowLayout
-}
-
-extension HomeViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ cv: UICollectionView,
-                        layout: UICollectionViewLayout,
-                        sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let w = cv.bounds.width
-        // Loader hücresi son eleman
-        if indexPath.item == viewModel.movieItems.count && viewModel.isLoading {
-            return CGSize(width: w, height: 60)
-        }
-        // Film kartı (örnek tek kolon)
-        return CGSize(width: w, height: 220)
-    }
 }

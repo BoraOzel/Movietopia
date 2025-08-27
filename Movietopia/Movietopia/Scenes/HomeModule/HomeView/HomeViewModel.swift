@@ -10,7 +10,8 @@ import SDWebImage
 
 protocol HomeViewModelInterface: AnyObject {
     func viewDidLoad()
-    func getMovies(reset: Bool) async
+    func viewWillAppear()
+    func getMovies() async
 }
 
 final class HomeViewModel {
@@ -29,35 +30,55 @@ extension HomeViewModel: HomeViewModelInterface {
         }
     }
     
-    func getMovies(reset: Bool = false) async {
+    func viewWillAppear() {
+        
+    }
+    
+    
+    func getMovies() async {
         
         guard !isLoading else { return }
         isLoading = true
         
         DispatchQueue.main.async {
-            self.view?.collectionView.reloadData()
+            self.view?.showProgress()
         }
-        
-        if reset {
-            currentPage = 1
-            movieItems.removeAll()
-        }
-        
-        do{
+
+        do {
+            
             let movies = try await networkServive.fetchData(page: currentPage)
-            if let moviesResponse = movies {
+            let newItems = movies?.results ?? []
+            guard !newItems.isEmpty else {
+                isLoading = false
                 DispatchQueue.main.async {
-                    self.movieItems.append(contentsOf: moviesResponse.results)
-                    self.view?.collectionView.reloadData()
+                    self.view?.removeProgress()
                 }
-                currentPage += 1
+
+                return
+            }
+
+            DispatchQueue.main.async {
+                let oldCount = self.movieItems.count
+                let added = newItems.count
+
+                self.movieItems.append(contentsOf: newItems)
+
+                let indexPaths = (oldCount..<(oldCount + added)).map { IndexPath(item: $0, section: 0) }
+
+                self.view?.collectionView.performBatchUpdates({
+                    self.view?.collectionView.insertItems(at: indexPaths)
+})
+                self.currentPage += 1
             }
         } catch {
             print(error)
-            DispatchQueue.main.async {
-                self.view?.collectionView.reloadData()
-            }
         }
+        
         isLoading = false
+        DispatchQueue.main.async {
+            self.view?.removeProgress()
+        }
+
     }
 }
+
