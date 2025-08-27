@@ -13,6 +13,8 @@ class MovieCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var movieImage: UIImageView!
     @IBOutlet weak var movieNameLabel: UILabel!
     @IBOutlet weak var releaseDateLabel: UILabel!
+    @IBOutlet weak var voteLabel: UILabel!
+    
     
     let baseImageUrl = "https://image.tmdb.org/t/p/w500/"
     
@@ -31,10 +33,13 @@ class MovieCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(data: MovieResult) {
+        let truncatedVote = floor((data.voteAverage ?? 0) * 100) / 100
+        let formattedVote = String(format: "%.1f", truncatedVote)
         movieNameLabel.text = data.title
         releaseDateLabel.text = "🗓️\(data.releaseDate!)"
         guard let posterPath = data.posterPath else { return }
         movieImage.sd_setImage(with: URL(string: "\(baseImageUrl)\(posterPath)"))
+        voteLabel.text = "⭐️\(formattedVote)"
     }
     
 }

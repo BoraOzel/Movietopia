@@ -43,17 +43,28 @@
                                 <rect key="frame" x="105" y="20" width="98" height="90"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="-10" translatesAutoresizingMaskIntoConstraints="NO" id="hDM-oF-f4F">
-                                        <rect key="frame" x="0.0" y="0.0" width="98" height="90"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="98" height="53.666666666666664"/>
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="Movie Name" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="N1S-UM-lwy">
-                                                <rect key="frame" x="0.0" y="0.0" width="98" height="84.333333333333329"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="98" height="53.666666666666664"/>
                                                 <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
+                                        </subviews>
+                                    </stackView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="yJT-vO-Kir">
+                                        <rect key="frame" x="0.0" y="53.666666666666671" width="98" height="36.333333333333329"/>
+                                        <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="🗓️ Date" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="woq-Qc-eWk">
-                                                <rect key="frame" x="0.0" y="74.333333333333329" width="98" height="15.666666666666671"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="98" height="15.666666666666666"/>
                                                 <fontDescription key="fontDescription" type="system" weight="light" pointSize="13"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vote" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="esj-p4-AlS">
+                                                <rect key="frame" x="0.0" y="20.666666666666657" width="98" height="15.666666666666664"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
@@ -88,6 +99,7 @@
                 <outlet property="movieImage" destination="MEo-Pd-XPB" id="q0j-Bq-mGa"/>
                 <outlet property="movieNameLabel" destination="N1S-UM-lwy" id="i0b-Ti-xWG"/>
                 <outlet property="releaseDateLabel" destination="woq-Qc-eWk" id="hkt-27-Lu8"/>
+                <outlet property="voteLabel" destination="esj-p4-AlS" id="1vP-s9-U8a"/>
             </connections>
             <point key="canvasLocation" x="309.92366412213738" y="36.619718309859159"/>
         </collectionViewCell>

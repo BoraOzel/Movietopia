@@ -59,11 +59,14 @@ extension HomeViewController: UICollectionViewDelegate {
         
     }
     
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        let threshold = max(0, viewModel.movieItems.count - 5)
-           if indexPath.item >= threshold {
-               Task { await viewModel.getMovies() }
-           }
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let frameHeight = scrollView.frame.size.height
+        
+        if offsetY > contentHeight - frameHeight * 1.1 {
+            Task { await viewModel.getMovies() }
+        }
     }
 }
 

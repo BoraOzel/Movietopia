@@ -34,51 +34,34 @@ extension HomeViewModel: HomeViewModelInterface {
         
     }
     
-    
+    @MainActor
     func getMovies() async {
-        
         guard !isLoading else { return }
         isLoading = true
-        
-        DispatchQueue.main.async {
-            self.view?.showProgress()
+        view?.showProgress()
+
+        defer {
+            isLoading = false
+            view?.removeProgress()
         }
 
         do {
-            
             let movies = try await networkServive.fetchData(page: currentPage)
             let newItems = movies?.results ?? []
-            guard !newItems.isEmpty else {
-                isLoading = false
-                DispatchQueue.main.async {
-                    self.view?.removeProgress()
-                }
+            guard !newItems.isEmpty else { return }
 
-                return
-            }
+            let oldCount = movieItems.count
+            movieItems.append(contentsOf: newItems)
 
-            DispatchQueue.main.async {
-                let oldCount = self.movieItems.count
-                let added = newItems.count
+            let indexPaths = (oldCount..<(movieItems.count)).map { IndexPath(item: $0, section: 0) }
+            view?.collectionView.performBatchUpdates({
+                view?.collectionView.insertItems(at: indexPaths)
+            })
 
-                self.movieItems.append(contentsOf: newItems)
-
-                let indexPaths = (oldCount..<(oldCount + added)).map { IndexPath(item: $0, section: 0) }
-
-                self.view?.collectionView.performBatchUpdates({
-                    self.view?.collectionView.insertItems(at: indexPaths)
-})
-                self.currentPage += 1
-            }
+            currentPage += 1
         } catch {
             print(error)
         }
-        
-        isLoading = false
-        DispatchQueue.main.async {
-            self.view?.removeProgress()
-        }
-
     }
 }
 
