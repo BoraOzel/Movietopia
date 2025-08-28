@@ -15,12 +15,13 @@ protocol HomeViewModelInterface: AnyObject {
 }
 
 final class HomeViewModel {
-    weak var view: HomeViewController?
+    weak var view: HomeViewControllerInterface?
     
     let networkServive = NetworkService.shared
     var movieItems: [MovieResult] = []
     var currentPage: Int = 1
     var isLoading = false
+    var onError: ((String, String) -> Void)?
 }
 
 extension HomeViewModel: HomeViewModelInterface {
@@ -39,29 +40,28 @@ extension HomeViewModel: HomeViewModelInterface {
         guard !isLoading else { return }
         isLoading = true
         view?.showProgress()
-
+        
         defer {
             isLoading = false
             view?.removeProgress()
         }
-
+        
         do {
             let movies = try await networkServive.fetchData(page: currentPage)
             let newItems = movies?.results ?? []
             guard !newItems.isEmpty else { return }
-
+            
             let oldCount = movieItems.count
             movieItems.append(contentsOf: newItems)
-
             let indexPaths = (oldCount..<(movieItems.count)).map { IndexPath(item: $0, section: 0) }
-            view?.collectionView.performBatchUpdates({
-                view?.collectionView.insertItems(at: indexPaths)
-            })
-
+            view?.insertItems(at: indexPaths)
             currentPage += 1
         } catch {
-            print(error)
+            await MainActor.run {
+                self.onError?("Error!", "Can't retrieve data. Please try again later.")
+            }
         }
+        isLoading = false
     }
 }
 

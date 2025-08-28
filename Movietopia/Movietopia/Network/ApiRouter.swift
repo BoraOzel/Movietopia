@@ -38,10 +38,6 @@ extension ApiRouter {
         }
     }
     
-    func getImagePath() -> String {
-        return (URLComponents(string: baseImageUrl + path)?.url)?.absoluteString ?? ""
-    }
-    
     func request() throws -> URLRequest {
         var components = URLComponents(string: baseUrl + path)
         components?.queryItems = queryParameters

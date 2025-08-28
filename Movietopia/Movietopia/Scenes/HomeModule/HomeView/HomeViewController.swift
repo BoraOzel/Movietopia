@@ -11,6 +11,9 @@ protocol HomeViewControllerInterface: AnyObject, SpinnerDisplayable {
     func configureVC()
     func setCollectionViewRegister()
     func reloadCollectionView()
+    func showCantGetDataError()
+    func insertItems(at indexPaths: [IndexPath])
+    func reloadSection(_ section: Int)
 }
 
 class HomeViewController: UIViewController {
@@ -27,13 +30,13 @@ class HomeViewController: UIViewController {
                             estimatedItemSize: nil)
         configureVC()
         setCollectionViewRegister()
-        
         Task {
             showProgress()
             viewModel.viewDidLoad()
             collectionView.reloadData()
             removeProgress()
         }
+        showCantGetDataError()
     }
 }
 
@@ -56,7 +59,16 @@ extension HomeViewController: UICollectionViewDataSource {
 
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
+        let movie = viewModel.movieItems[indexPath.item]
+
+        let storyboard = UIStoryboard(name: "MovieDetail", bundle: nil)
+        guard let detailVC = storyboard.instantiateViewController(withIdentifier: "MovieDetailViewController")
+                as? MovieDetailViewController else {
+            assertionFailure("Couldn't find Movie Detail View Controller.")
+            return
+        }
+        detailVC.fetchedMovie = movie
+        navigationController?.pushViewController(detailVC, animated: true)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -84,6 +96,28 @@ extension HomeViewController: HomeViewControllerInterface {
     
     func configureVC() {
         viewModel.view = self
+    }
+    
+    func showCantGetDataError() {
+        viewModel.onError = { [weak self] title, message in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                AlertHelper.showAlert(on: self,
+                                      title: title,
+                                      message: message,
+                                      buttonTitle: "Retry")
+            }
+        }
+    }
+    
+    func insertItems(at indexPaths: [IndexPath]) {
+        collectionView.performBatchUpdates {
+            collectionView.insertItems(at: indexPaths)
+        }
+    }
+    
+    func reloadSection(_ section: Int) {
+        collectionView.reloadSections(IndexSet(integer: section))
     }
 }
 
