@@ -9,32 +9,25 @@ import Foundation
 
 enum ApiRouter {
     case popularMovies(page: Int)
-    case ImageUrl(path: String)
 }
 
 extension ApiRouter {
     var baseUrl: String { "https://api.themoviedb.org/3" }
-    var baseImageUrl : String { "https://image.tmdb.org/t/p/w500/" }
     
     var path: String {
         switch self {
         case .popularMovies:
             return "/movie/popular"
-        case .ImageUrl(path: let path):
-            return "\(baseImageUrl)"
         }
     }
     
     var queryParameters: [URLQueryItem] {
-        let apiKey = "533106d280b301f294e6fbc565f8947a"
         switch self {
         case .popularMovies(let page):
             return [
-                URLQueryItem(name: "api_key", value: apiKey),
+                URLQueryItem(name: "api_key", value: NetworkEndPoint.apiKey.rawValue),
                 URLQueryItem(name: "page", value: "\(page)")
             ]
-        case .ImageUrl(path: let path):
-            return [URLQueryItem(name: "", value: "\(path)")]
         }
     }
     
@@ -52,6 +45,4 @@ extension ApiRouter {
         return request
     }
 }
-
-
 

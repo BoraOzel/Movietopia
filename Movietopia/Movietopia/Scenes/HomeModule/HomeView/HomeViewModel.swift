@@ -8,26 +8,42 @@
 import Foundation
 import SDWebImage
 
-protocol HomeViewModelInterface: AnyObject {
+protocol HomeViewModelInterface {
+    var networkService: NetworkServiceProtocol { get }
+    
     func viewDidLoad()
     func viewWillAppear()
     func getMovies() async
+    func numberOfItems() -> Int
+    func getItem(at index: Int) -> MovieResult
+    func showAlertError()
 }
 
 final class HomeViewModel {
+    private(set) var networkService: NetworkServiceProtocol
     weak var view: HomeViewControllerInterface?
-    
-    let networkServive = NetworkService.shared
     var movieItems: [MovieResult] = []
     var currentPage: Int = 1
     var isLoading = false
     var onError: ((String, String) -> Void)?
+    var onLoading: ((Bool) -> Void)?
+    var onItemsInserted: (([IndexPath]) -> Void)?
+    
+    init(view: HomeViewControllerInterface,
+         networkService: NetworkServiceProtocol = NetworkService.shared) {
+        self.view = view
+        self.networkService = networkService
+    }
 }
+
 
 extension HomeViewModel: HomeViewModelInterface {
     func viewDidLoad() {
         Task{
+            view?.showProgress()
             await getMovies()
+            view?.reloadCollectionView()
+            view?.removeProgress()
         }
     }
     
@@ -40,14 +56,16 @@ extension HomeViewModel: HomeViewModelInterface {
         guard !isLoading else { return }
         isLoading = true
         view?.showProgress()
+        view?.showLoading(true)
         
         defer {
             isLoading = false
             view?.removeProgress()
+            view?.showLoading(true)
         }
         
         do {
-            let movies = try await networkServive.fetchData(page: currentPage)
+            let movies = try await networkService.fetchData(page: currentPage)
             let newItems = movies?.results ?? []
             guard !newItems.isEmpty else { return }
             
@@ -58,10 +76,28 @@ extension HomeViewModel: HomeViewModelInterface {
             currentPage += 1
         } catch {
             await MainActor.run {
-                self.onError?("Error!", "Can't retrieve data. Please try again later.")
+                showAlertError()
             }
         }
         isLoading = false
+    }
+    
+    func numberOfItems() -> Int {
+        return movieItems.count
+    }
+    
+    func getItem(at index: Int) -> MovieResult {
+        movieItems[index]
+    }
+    
+    func showAlertError() {
+        view?.showAlert(title: "Error!",
+                        message: "Can't retrieve data. Please try again later.",
+                        buttonText: "Retry") { _ in
+            Task {
+                await self.getMovies()
+            }
+        }
     }
 }
 

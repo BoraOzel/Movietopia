@@ -13,10 +13,17 @@ enum NetworkEndPoint: String {
     case apiKey = "533106d280b301f294e6fbc565f8947a"
 }
 
+//protokol eklenebilir
 class NetworkHelper {
     static let shared = NetworkHelper()
     
+    private init() {}
+    
     func requestUrl(path: String) -> String {
         return "\(NetworkEndPoint.baseUrl.rawValue)\(path)\(NetworkEndPoint.apiKey.rawValue)"
+    }
+    
+    func requestImageurl(path: String) -> String {
+        return "\(NetworkEndPoint.baseImageUrl.rawValue)\(path)"
     }
 }

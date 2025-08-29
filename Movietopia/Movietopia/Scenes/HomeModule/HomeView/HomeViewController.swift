@@ -7,49 +7,42 @@
 
 import UIKit
 
-protocol HomeViewControllerInterface: AnyObject, SpinnerDisplayable {
+protocol HomeViewControllerInterface: AnyObject,
+                                      SpinnerDisplayable,
+                                      AlertPresentable {
     func configureVC()
     func setCollectionViewRegister()
     func reloadCollectionView()
-    func showCantGetDataError()
+    func showLoading(_ show: Bool)
     func insertItems(at indexPaths: [IndexPath])
-    func reloadSection(_ section: Int)
+    func setCustomFlowLayout()
 }
 
 class HomeViewController: UIViewController {
     
     @IBOutlet weak var collectionView: UICollectionView!
     
-    let viewModel = HomeViewModel()
+    lazy var viewModel: HomeViewModelInterface = HomeViewModel(view: self)
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setCustomFlowLayout(lineSpacing: 10,
-                            interItemSpacing: 10,
-                            sectionInset: .zero,
-                            estimatedItemSize: nil)
-        configureVC()
         setCollectionViewRegister()
-        Task {
-            showProgress()
-            viewModel.viewDidLoad()
-            collectionView.reloadData()
-            removeProgress()
-        }
-        showCantGetDataError()
+        setCustomFlowLayout()
+        configureVC()
+        viewModel.viewDidLoad()
     }
 }
 
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return viewModel.movieItems.count
+        return viewModel.numberOfItems()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell: MovieCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "\(MovieCollectionViewCell.self)",
                                                                                      for: indexPath) as? MovieCollectionViewCell
         else { return UICollectionViewCell() }
-        cell.configure(data: viewModel.movieItems[indexPath.item])
+        cell.configure(data: viewModel.getItem(at: indexPath.item))
         cell.layer.borderWidth = 1
         cell.layer.cornerRadius = 20
         cell.layer.borderColor = UIColor.lightGray.cgColor
@@ -59,14 +52,14 @@ extension HomeViewController: UICollectionViewDataSource {
 
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let movie = viewModel.movieItems[indexPath.item]
-
+        let movie = viewModel.getItem(at: indexPath.item)
+        
         let storyboard = UIStoryboard(name: "MovieDetail", bundle: nil)
         guard let detailVC = storyboard.instantiateViewController(withIdentifier: "MovieDetailViewController")
                 as? MovieDetailViewController else {
-            assertionFailure("Couldn't find Movie Detail View Controller.")
-            return
-        }
+                    assertionFailure("Couldn't find Movie Detail View Controller.")
+                    return
+                }
         detailVC.fetchedMovie = movie
         navigationController?.pushViewController(detailVC, animated: true)
     }
@@ -83,6 +76,7 @@ extension HomeViewController: UICollectionViewDelegate {
 }
 
 extension HomeViewController: HomeViewControllerInterface {
+    
     func setCollectionViewRegister() {
         collectionView.register(UINib(nibName: "\(MovieCollectionViewCell.self)", bundle: nil),
                                 forCellWithReuseIdentifier: "MovieCollectionViewCell")
@@ -94,20 +88,11 @@ extension HomeViewController: HomeViewControllerInterface {
         }
     }
     
-    func configureVC() {
-        viewModel.view = self
-    }
-    
-    func showCantGetDataError() {
-        viewModel.onError = { [weak self] title, message in
-            guard let self = self else { return }
-            DispatchQueue.main.async {
-                AlertHelper.showAlert(on: self,
-                                      title: title,
-                                      message: message,
-                                      buttonTitle: "Retry")
-            }
+        func configureVC() {
         }
+    
+    func showLoading(_ show: Bool) {
+        show ? showProgress() : removeProgress()
     }
     
     func insertItems(at indexPaths: [IndexPath]) {
@@ -116,8 +101,11 @@ extension HomeViewController: HomeViewControllerInterface {
         }
     }
     
-    func reloadSection(_ section: Int) {
-        collectionView.reloadSections(IndexSet(integer: section))
+    func setCustomFlowLayout() {
+        setCustomFlowLayout(lineSpacing: 10,
+                            interItemSpacing: 10,
+                            sectionInset: .zero,
+                            estimatedItemSize: nil)
     }
 }
 
