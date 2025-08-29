@@ -23,6 +23,7 @@ class HomeViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     
     lazy var viewModel: HomeViewModelInterface = HomeViewModel(view: self)
+    let arranger: ArgumentArrangerProtocol = ArgumentArranger()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,10 +43,9 @@ extension HomeViewController: UICollectionViewDataSource {
         guard let cell: MovieCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "\(MovieCollectionViewCell.self)",
                                                                                      for: indexPath) as? MovieCollectionViewCell
         else { return UICollectionViewCell() }
+        cell.arranger = arranger  
         cell.configure(data: viewModel.getItem(at: indexPath.item))
-        cell.layer.borderWidth = 1
-        cell.layer.cornerRadius = 20
-        cell.layer.borderColor = UIColor.lightGray.cgColor
+        cell.setCellBorder(cell: cell)
         return cell
     }
 }
@@ -89,6 +89,7 @@ extension HomeViewController: HomeViewControllerInterface {
     }
     
         func configureVC() {
+            
         }
     
     func showLoading(_ show: Bool) {

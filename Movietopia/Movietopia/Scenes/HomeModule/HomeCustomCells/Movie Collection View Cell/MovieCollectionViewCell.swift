@@ -15,6 +15,11 @@ class MovieCollectionViewCell: UICollectionViewCell {
     @IBOutlet private weak var releaseDateLabel: UILabel!
     @IBOutlet private weak var voteLabel: UILabel!
     
+    let networkHelper: NetworkHelperProtocol = NetworkHelper.shared
+    
+    private var gradientLayer: CAGradientLayer?
+    var arranger: ArgumentArrangerProtocol?
+    
     override func awakeFromNib() {
         super.awakeFromNib()
     }
@@ -30,26 +35,24 @@ class MovieCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(data: MovieResult) {
-        let truncatedVote = floor((data.voteAverage ?? 0) * 100) / 100
-        let formattedVote = String(format: "%.1f", truncatedVote)
+        guard let vote = arranger?.getFormatteddVote(vote: data.voteAverage ?? 0) else { return }
         guard let posterPath = data.posterPath else { return }
+        guard let formattedYear = arranger?.formatYear(from: data.releaseDate ?? "") else { return }
         
         movieNameLabel.text = data.title
-        releaseDateLabel.text = "🗓️\(formatYear(from: data.releaseDate ?? ""))"
-        movieImage.sd_setImage(with: URL(string: NetworkHelper.shared.requestImageurl(path: posterPath)))
-        voteLabel.text = "⭐️\(formattedVote)"
+        releaseDateLabel.text = "🗓️\(formattedYear)"
+        movieImage.sd_setImage(with: URL(string: networkHelper.requestImageurl(path: posterPath)))
+        voteLabel.text = "⭐️\(vote)"
     }
     
-    func formatYear(from dateString: String) -> String {
-        let inputFormatter = DateFormatter()
-        inputFormatter.dateFormat = "yyyy-MM-dd"
+    func setCellBorder(cell: UICollectionViewCell) {
+        cell.layer.borderWidth = 1
+        cell.layer.cornerRadius = 20
+        cell.layer.borderColor = UIColor.lightGray.cgColor
+    }
 
-        guard let date = inputFormatter.date(from: dateString) else {
-            return "-"
-        }
-
-        let outputFormatter = DateFormatter()
-        outputFormatter.dateFormat = "yyyy"
-        return outputFormatter.string(from: date)
+    func setRadiusForPoster() {
+        movieImage.layer.cornerRadius = 12
+        movieImage.layer.masksToBounds = true
     }
 }

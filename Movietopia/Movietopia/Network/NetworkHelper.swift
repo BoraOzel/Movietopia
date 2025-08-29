@@ -13,8 +13,12 @@ enum NetworkEndPoint: String {
     case apiKey = "533106d280b301f294e6fbc565f8947a"
 }
 
-//protokol eklenebilir
-class NetworkHelper {
+protocol NetworkHelperProtocol {
+    func requestUrl(path: String) -> String
+    func requestImageurl(path: String) -> String
+}
+
+class NetworkHelper: NetworkHelperProtocol {
     static let shared = NetworkHelper()
     
     private init() {}

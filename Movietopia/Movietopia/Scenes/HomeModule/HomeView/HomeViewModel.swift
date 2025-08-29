@@ -12,7 +12,6 @@ protocol HomeViewModelInterface {
     var networkService: NetworkServiceProtocol { get }
     
     func viewDidLoad()
-    func viewWillAppear()
     func getMovies() async
     func numberOfItems() -> Int
     func getItem(at index: Int) -> MovieResult
@@ -25,9 +24,9 @@ final class HomeViewModel {
     var movieItems: [MovieResult] = []
     var currentPage: Int = 1
     var isLoading = false
-    var onError: ((String, String) -> Void)?
-    var onLoading: ((Bool) -> Void)?
-    var onItemsInserted: (([IndexPath]) -> Void)?
+//    var onError: ((String, String) -> Void)?
+//    var onLoading: ((Bool) -> Void)?
+//    var onItemsInserted: (([IndexPath]) -> Void)?
     
     init(view: HomeViewControllerInterface,
          networkService: NetworkServiceProtocol = NetworkService.shared) {
@@ -35,7 +34,6 @@ final class HomeViewModel {
         self.networkService = networkService
     }
 }
-
 
 extension HomeViewModel: HomeViewModelInterface {
     func viewDidLoad() {
@@ -46,11 +44,7 @@ extension HomeViewModel: HomeViewModelInterface {
             view?.removeProgress()
         }
     }
-    
-    func viewWillAppear() {
-        
-    }
-    
+
     @MainActor
     func getMovies() async {
         guard !isLoading else { return }

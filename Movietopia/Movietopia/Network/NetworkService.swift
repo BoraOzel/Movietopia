@@ -7,8 +7,6 @@
 
 import Foundation
 
-//movies yerine generic ttype eklenebilir
-
 protocol NetworkServiceProtocol: AnyObject {
     func fetchData(page: Int) async throws -> Movies?
 }
@@ -19,7 +17,7 @@ final class NetworkService: NetworkServiceProtocol {
     
     var shouldFailOnce = true
     
-    func fetchData(page: Int) async throws -> Movies? {
+    func fetchData<T: Codable>(page: Int) async throws -> T {
         if shouldFailOnce {
             shouldFailOnce = false
             throw URLError(.notConnectedToInternet)
@@ -33,7 +31,7 @@ final class NetworkService: NetworkServiceProtocol {
             throw URLError(.badServerResponse)
         }
         
-        let movies = try JSONDecoder().decode(Movies.self, from: data)
+        let movies = try JSONDecoder().decode(T.self, from: data)
         return movies
     }
 }
