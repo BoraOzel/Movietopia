@@ -24,9 +24,6 @@ final class HomeViewModel {
     var movieItems: [MovieResult] = []
     var currentPage: Int = 1
     var isLoading = false
-//    var onError: ((String, String) -> Void)?
-//    var onLoading: ((Bool) -> Void)?
-//    var onItemsInserted: (([IndexPath]) -> Void)?
     
     init(view: HomeViewControllerInterface,
          networkService: NetworkServiceProtocol = NetworkService.shared) {
@@ -59,8 +56,8 @@ extension HomeViewModel: HomeViewModelInterface {
         }
         
         do {
-            let movies = try await networkService.fetchData(page: currentPage)
-            let newItems = movies?.results ?? []
+            let movies = try await networkService.fetchMovies(page: currentPage)
+            let newItems = movies.results ?? []
             guard !newItems.isEmpty else { return }
             
             let oldCount = movieItems.count

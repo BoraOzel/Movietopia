@@ -8,7 +8,8 @@
 import Foundation
 
 protocol NetworkServiceProtocol: AnyObject {
-    func fetchData(page: Int) async throws -> Movies?
+    func request<T: Decodable>(_ route: ApiRouter) async throws -> T
+    func fetchMovies(page: Int) async throws -> Movies
 }
 
 final class NetworkService: NetworkServiceProtocol {
@@ -17,21 +18,21 @@ final class NetworkService: NetworkServiceProtocol {
     
     var shouldFailOnce = true
     
-    func fetchData<T: Codable>(page: Int) async throws -> T {
+    func request<T: Decodable>(_ route: ApiRouter) async throws -> T {
         if shouldFailOnce {
             shouldFailOnce = false
             throw URLError(.notConnectedToInternet)
         }
-        let router = ApiRouter.popularMovies(page: page)
-        let request = try router.request()
-        
+        let request = try route.request()
         let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
             throw URLError(.badServerResponse)
         }
-        
-        let movies = try JSONDecoder().decode(T.self, from: data)
-        return movies
+        return try JSONDecoder().decode(T.self, from: data)
     }
+    
+    func fetchMovies(page: Int) async throws -> Movies {
+        try await request(.popularMovies(page: page))
+    }
+    
 }

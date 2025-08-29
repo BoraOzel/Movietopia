@@ -16,6 +16,7 @@ protocol HomeViewControllerInterface: AnyObject,
     func showLoading(_ show: Bool)
     func insertItems(at indexPaths: [IndexPath])
     func setCustomFlowLayout()
+    func loadDetailVC() -> MovieDetailViewController
 }
 
 class HomeViewController: UIViewController {
@@ -52,15 +53,8 @@ extension HomeViewController: UICollectionViewDataSource {
 
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let movie = viewModel.getItem(at: indexPath.item)
-        
-        let storyboard = UIStoryboard(name: "MovieDetail", bundle: nil)
-        guard let detailVC = storyboard.instantiateViewController(withIdentifier: "MovieDetailViewController")
-                as? MovieDetailViewController else {
-                    assertionFailure("Couldn't find Movie Detail View Controller.")
-                    return
-                }
-        detailVC.fetchedMovie = movie
+        let detailVC = loadDetailVC()
+        detailVC.configure(data: viewModel.getItem(at: indexPath.item))
         navigationController?.pushViewController(detailVC, animated: true)
     }
     
@@ -107,6 +101,13 @@ extension HomeViewController: HomeViewControllerInterface {
                             interItemSpacing: 10,
                             sectionInset: .zero,
                             estimatedItemSize: nil)
+    }
+    
+    func loadDetailVC() -> MovieDetailViewController {
+        let storyboard = UIStoryboard(name: "MovieDetail", bundle: nil)
+        let vc = storyboard.instantiateViewController(identifier: "MovieDetailViewController") as! MovieDetailViewController
+        vc.loadViewIfNeeded()
+        return vc
     }
 }
 

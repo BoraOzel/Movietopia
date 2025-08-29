@@ -8,7 +8,7 @@
 import UIKit
 
 protocol MovieDetailViewControllerInterface: AnyObject {
-    func configure()
+    func configure(data: MovieResult)
 }
 
 class MovieDetailViewController: UIViewController {
@@ -23,23 +23,21 @@ class MovieDetailViewController: UIViewController {
     let networkHelper: NetworkHelperProtocol = NetworkHelper.shared
     
     var viewModel: MovieDetailViewModelInterface = MovieDetailViewModel()
-    var fetchedMovie: MovieResult?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        configure()
     }
 }
 
-extension MovieDetailViewController: MovieDetailViewControllerInterface {
-    func configure() {
-        let vote = arranger.getFormatteddVote(vote: fetchedMovie?.voteAverage ?? 0)
-        let posterPath = fetchedMovie?.posterPath ?? ""
-        let formattedYear = arranger.formatYear(from: fetchedMovie?.releaseDate ?? "")
-        titleLabel.text = fetchedMovie?.title
+extension MovieDetailViewController: MovieDetailViewControllerInterface{
+    func configure(data: MovieResult) {
+        let vote = arranger.getFormatteddVote(vote: data.voteAverage ?? 0)
+        let posterPath = data.posterPath ?? ""
+        let formattedYear = arranger.formatYear(from: data.releaseDate ?? "")
+        titleLabel.text = data.title
         ratingLabel.text = "⭐️\(vote)"
         dateLabel.text = formattedYear
         posterImage.sd_setImage(with: URL(string: networkHelper.requestImageurl(path: posterPath)))
-        descriptionLabel.text = fetchedMovie?.overview
+        descriptionLabel.text = data.overview
     }
 }

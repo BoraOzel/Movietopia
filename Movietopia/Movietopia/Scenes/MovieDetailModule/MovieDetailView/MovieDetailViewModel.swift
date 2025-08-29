@@ -8,7 +8,7 @@
 import Foundation
 
 protocol MovieDetailViewModelInterface {
-    func viewDidLoad()
+
 }
 
 class MovieDetailViewModel {
@@ -17,7 +17,5 @@ class MovieDetailViewModel {
 }
 
 extension MovieDetailViewModel: MovieDetailViewModelInterface {
-    func viewDidLoad() {
-        
-    }
+
 }
