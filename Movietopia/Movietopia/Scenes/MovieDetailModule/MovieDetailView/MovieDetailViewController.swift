@@ -19,9 +19,7 @@ final class MovieDetailViewController: UIViewController {
     @IBOutlet private weak var dateLabel: UILabel!
     @IBOutlet private weak var descriptionLabel: UILabel!
     
-    let networkHelper: NetworkHelperProtocol = NetworkHelper.shared
-    
-    var viewModel: MovieDetailViewModelInterface = MovieDetailViewModel()
+    lazy var viewModel: MovieDetailViewModelInterface = MovieDetailViewModel(view: self)
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,7 +31,7 @@ extension MovieDetailViewController: MovieDetailViewControllerInterface{
         titleLabel.text = data.title
         ratingLabel.text = "⭐️\(data.voteAverage?.toFormattedVote() ?? "-")"
         dateLabel.text = data.releaseDate?.toFormattedYear()
-        posterImage.sd_setImage(with: URL(string: networkHelper.requestImageurl(path: data.posterPath ?? "")))
+        posterImage.sd_setImage(with: URL(string: "\(NetworkEndPoint.baseImageUrl.rawValue)\(data.posterPath ?? "")"))
         descriptionLabel.text = data.overview
     }
 }

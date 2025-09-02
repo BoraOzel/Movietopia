@@ -73,7 +73,7 @@ extension HomeViewModel: HomeViewModelInterface {
         Task{
             view?.showProgress()
             await getMovies()
-            view?.reloadCollectionView()
+            
             view?.removeProgress()
         }
     }

@@ -15,8 +15,6 @@ final class MovieCollectionViewCell: UICollectionViewCell {
     @IBOutlet private weak var releaseDateLabel: UILabel!
     @IBOutlet private weak var voteLabel: UILabel!
     
-    let networkHelper: NetworkHelperProtocol = NetworkHelper.shared
-    
     override func awakeFromNib() {
         super.awakeFromNib()
     }

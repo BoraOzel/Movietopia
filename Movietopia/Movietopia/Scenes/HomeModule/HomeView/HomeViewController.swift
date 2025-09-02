@@ -15,7 +15,6 @@ typealias HomeViewKit = HomeViewItems
 
 protocol HomeViewControllerInterface: AnyObject,
                                       HomeViewKit {
-    func configureVC()
     func setCollectionViewRegister()
     func reloadCollectionView()
     func showLoading(_ show: Bool)
@@ -35,7 +34,6 @@ final class HomeViewController: UIViewController {
         super.viewDidLoad()
         setCollectionViewRegister()
         setCustomFlowLayout()
-        configureVC()
         viewModel.viewDidLoad()
     }
 }
@@ -87,10 +85,6 @@ extension HomeViewController: HomeViewControllerInterface {
             self.collectionView.reloadData()
         }
     }
-    
-        func configureVC() {
-            
-        }
     
     func showLoading(_ show: Bool) {
         show ? showProgress() : removeProgress()
