@@ -18,7 +18,7 @@ protocol NetworkHelperProtocol {
     func requestImageurl(path: String) -> String
 }
 
-class NetworkHelper: NetworkHelperProtocol {
+final class NetworkHelper: NetworkHelperProtocol {
     static let shared = NetworkHelper()
     
     private init() {}

@@ -29,7 +29,8 @@
 		0FC84A422E60400900BAF4BC /* MovieDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC84A412E60400900BAF4BC /* MovieDetailViewModel.swift */; };
 		0FC84A4C2E606A5000BAF4BC /* NetworkHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC84A4B2E606A5000BAF4BC /* NetworkHelper.swift */; };
 		0FC84A4F2E617CFD00BAF4BC /* AlertPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC84A4E2E617CFC00BAF4BC /* AlertPresentable.swift */; };
-		0FC84A522E61A57D00BAF4BC /* ArgumentArranger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC84A512E61A57D00BAF4BC /* ArgumentArranger.swift */; };
+		0FC84A672E66CF3500BAF4BC /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC84A662E66CF3500BAF4BC /* String+Extension.swift */; };
+		0FC84A692E66D1B000BAF4BC /* Double+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FC84A682E66D1B000BAF4BC /* Double+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -55,7 +56,8 @@
 		0FC84A412E60400900BAF4BC /* MovieDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailViewModel.swift; sourceTree = "<group>"; };
 		0FC84A4B2E606A5000BAF4BC /* NetworkHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkHelper.swift; sourceTree = "<group>"; };
 		0FC84A4E2E617CFC00BAF4BC /* AlertPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertPresentable.swift; sourceTree = "<group>"; };
-		0FC84A512E61A57D00BAF4BC /* ArgumentArranger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArgumentArranger.swift; sourceTree = "<group>"; };
+		0FC84A662E66CF3500BAF4BC /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
+		0FC84A682E66D1B000BAF4BC /* Double+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Double+Extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 		0FC848C22E5D8FB900BAF4BC /* Movietopia */ = {
 			isa = PBXGroup;
 			children = (
+				0FC84A652E66CE8B00BAF4BC /* Extensions */,
 				0FC848CD2E5D904200BAF4BC /* Utilities */,
 				0FC848CC2E5D902F00BAF4BC /* Scenes */,
 				0FC848CB2E5D901D00BAF4BC /* Model */,
@@ -141,7 +144,6 @@
 		0FC848CD2E5D904200BAF4BC /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				0FC84A502E61A55700BAF4BC /* ArgumentArranger */,
 				0FC84A4D2E617CC300BAF4BC /* AlertPresentable */,
 				0FC849EF2E5F4AC800BAF4BC /* SpinnerDisplayable */,
 				0FC8499A2E5ED9F200BAF4BC /* SingleColumnDynamicHeightFlowLayout */,
@@ -252,12 +254,13 @@
 			path = AlertPresentable;
 			sourceTree = "<group>";
 		};
-		0FC84A502E61A55700BAF4BC /* ArgumentArranger */ = {
+		0FC84A652E66CE8B00BAF4BC /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
-				0FC84A512E61A57D00BAF4BC /* ArgumentArranger.swift */,
+				0FC84A662E66CF3500BAF4BC /* String+Extension.swift */,
+				0FC84A682E66D1B000BAF4BC /* Double+Extension.swift */,
 			);
-			path = ArgumentArranger;
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -344,12 +347,13 @@
 			files = (
 				0FC848C32E5D8FB900BAF4BC /* AppDelegate.swift in Sources */,
 				0FC848FC2E5DA12600BAF4BC /* HomeViewModel.swift in Sources */,
+				0FC84A692E66D1B000BAF4BC /* Double+Extension.swift in Sources */,
 				0FC8499C2E5EDA4400BAF4BC /* SingleColumnDynamicHeightFlowLayout.swift in Sources */,
 				0FC84A3D2E603F3A00BAF4BC /* MovieDetailViewController.swift in Sources */,
 				0FC848C42E5D8FB900BAF4BC /* SceneDelegate.swift in Sources */,
 				0FC848D22E5D911B00BAF4BC /* MovieModel.swift in Sources */,
-				0FC84A522E61A57D00BAF4BC /* ArgumentArranger.swift in Sources */,
 				0FC84A4C2E606A5000BAF4BC /* NetworkHelper.swift in Sources */,
+				0FC84A672E66CF3500BAF4BC /* String+Extension.swift in Sources */,
 				0FC848D02E5D90B700BAF4BC /* NetworkService.swift in Sources */,
 				0FC849F12E5F4B7300BAF4BC /* SpinnerDisplayable.swift in Sources */,
 				0FC848C52E5D8FB900BAF4BC /* HomeViewController.swift in Sources */,

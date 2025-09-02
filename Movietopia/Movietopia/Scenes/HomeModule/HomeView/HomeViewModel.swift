@@ -14,8 +14,9 @@ protocol HomeViewModelInterface {
     func viewDidLoad()
     func getMovies() async
     func numberOfItems() -> Int
-    func getItem(at index: Int) -> MovieResult
+    func getItem(at index: Int) -> MovieResult?
     func showAlertError()
+    func fetchMoviesToVC()
 }
 
 final class HomeViewModel {
@@ -34,12 +35,7 @@ final class HomeViewModel {
 
 extension HomeViewModel: HomeViewModelInterface {
     func viewDidLoad() {
-        Task{
-            view?.showProgress()
-            await getMovies()
-            view?.reloadCollectionView()
-            view?.removeProgress()
-        }
+        fetchMoviesToVC()
     }
 
     @MainActor
@@ -73,11 +69,20 @@ extension HomeViewModel: HomeViewModelInterface {
         isLoading = false
     }
     
+    func fetchMoviesToVC() {
+        Task{
+            view?.showProgress()
+            await getMovies()
+            view?.reloadCollectionView()
+            view?.removeProgress()
+        }
+    }
+    
     func numberOfItems() -> Int {
         return movieItems.count
     }
     
-    func getItem(at index: Int) -> MovieResult {
+    func getItem(at index: Int) -> MovieResult? {
         movieItems[index]
     }
     

@@ -11,15 +11,14 @@ protocol MovieDetailViewControllerInterface: AnyObject {
     func configure(data: MovieResult)
 }
 
-class MovieDetailViewController: UIViewController {
+final class MovieDetailViewController: UIViewController {
     
-    @IBOutlet weak var posterImage: UIImageView!
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var ratingLabel: UILabel!
-    @IBOutlet weak var dateLabel: UILabel!
-    @IBOutlet weak var descriptionLabel: UILabel!
+    @IBOutlet private weak var posterImage: UIImageView!
+    @IBOutlet private weak var titleLabel: UILabel!
+    @IBOutlet private weak var ratingLabel: UILabel!
+    @IBOutlet private weak var dateLabel: UILabel!
+    @IBOutlet private weak var descriptionLabel: UILabel!
     
-    let arranger: ArgumentArrangerProtocol = ArgumentArranger()
     let networkHelper: NetworkHelperProtocol = NetworkHelper.shared
     
     var viewModel: MovieDetailViewModelInterface = MovieDetailViewModel()
@@ -31,13 +30,10 @@ class MovieDetailViewController: UIViewController {
 
 extension MovieDetailViewController: MovieDetailViewControllerInterface{
     func configure(data: MovieResult) {
-        let vote = arranger.getFormatteddVote(vote: data.voteAverage ?? 0)
-        let posterPath = data.posterPath ?? ""
-        let formattedYear = arranger.formatYear(from: data.releaseDate ?? "")
         titleLabel.text = data.title
-        ratingLabel.text = "⭐️\(vote)"
-        dateLabel.text = formattedYear
-        posterImage.sd_setImage(with: URL(string: networkHelper.requestImageurl(path: posterPath)))
+        ratingLabel.text = "⭐️\(data.voteAverage?.toFormattedVote() ?? "-")"
+        dateLabel.text = data.releaseDate?.toFormattedYear()
+        posterImage.sd_setImage(with: URL(string: networkHelper.requestImageurl(path: data.posterPath ?? "")))
         descriptionLabel.text = data.overview
     }
 }

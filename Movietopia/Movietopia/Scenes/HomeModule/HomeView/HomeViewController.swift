@@ -7,9 +7,14 @@
 
 import UIKit
 
+protocol HomeViewItems: AlertPresentable,
+                        SpinnerDisplayable
+{}
+
+typealias HomeViewKit = HomeViewItems
+
 protocol HomeViewControllerInterface: AnyObject,
-                                      SpinnerDisplayable,
-                                      AlertPresentable {
+                                      HomeViewKit {
     func configureVC()
     func setCollectionViewRegister()
     func reloadCollectionView()
@@ -17,14 +22,14 @@ protocol HomeViewControllerInterface: AnyObject,
     func insertItems(at indexPaths: [IndexPath])
     func setCustomFlowLayout()
     func loadDetailVC() -> MovieDetailViewController
+    func navigateToDetail(vc: UIViewController)
 }
 
-class HomeViewController: UIViewController {
+final class HomeViewController: UIViewController {
     
     @IBOutlet weak var collectionView: UICollectionView!
     
     lazy var viewModel: HomeViewModelInterface = HomeViewModel(view: self)
-    let arranger: ArgumentArrangerProtocol = ArgumentArranger()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,8 +49,8 @@ extension HomeViewController: UICollectionViewDataSource {
         guard let cell: MovieCollectionViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "\(MovieCollectionViewCell.self)",
                                                                                      for: indexPath) as? MovieCollectionViewCell
         else { return UICollectionViewCell() }
-        cell.arranger = arranger  
-        cell.configure(data: viewModel.getItem(at: indexPath.item))
+        guard let item = viewModel.getItem(at: indexPath.item) else { return UICollectionViewCell() }
+        cell.configure(data: item)
         cell.setCellBorder(cell: cell)
         return cell
     }
@@ -54,8 +59,9 @@ extension HomeViewController: UICollectionViewDataSource {
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let detailVC = loadDetailVC()
-        detailVC.configure(data: viewModel.getItem(at: indexPath.item))
-        navigationController?.pushViewController(detailVC, animated: true)
+        guard let item = viewModel.getItem(at: indexPath.item) else { return }
+        detailVC.configure(data: item)
+        navigateToDetail(vc: detailVC)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -108,6 +114,10 @@ extension HomeViewController: HomeViewControllerInterface {
         let vc = storyboard.instantiateViewController(identifier: "MovieDetailViewController") as! MovieDetailViewController
         vc.loadViewIfNeeded()
         return vc
+    }
+    
+    func navigateToDetail(vc: UIViewController) {
+        navigationController?.pushViewController(vc, animated: true)
     }
 }
 

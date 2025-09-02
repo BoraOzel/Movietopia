@@ -11,7 +11,7 @@ protocol MovieDetailViewModelInterface {
 
 }
 
-class MovieDetailViewModel {
+final class MovieDetailViewModel {
     weak var view: MovieDetailViewControllerInterface?
     
 }

@@ -16,13 +16,7 @@ final class NetworkService: NetworkServiceProtocol {
     static let shared = NetworkService()
     private init() {}
     
-    var shouldFailOnce = true
-    
     func request<T: Decodable>(_ route: ApiRouter) async throws -> T {
-        if shouldFailOnce {
-            shouldFailOnce = false
-            throw URLError(.notConnectedToInternet)
-        }
         let request = try route.request()
         let (data, response) = try await URLSession.shared.data(for: request)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else {

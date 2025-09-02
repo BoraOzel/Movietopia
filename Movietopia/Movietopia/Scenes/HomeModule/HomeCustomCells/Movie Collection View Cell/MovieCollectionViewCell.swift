@@ -7,7 +7,7 @@
 
 import UIKit
 
-class MovieCollectionViewCell: UICollectionViewCell {
+final class MovieCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet private weak var containerView: UIView!
     @IBOutlet private weak var movieImage: UIImageView!
@@ -16,9 +16,6 @@ class MovieCollectionViewCell: UICollectionViewCell {
     @IBOutlet private weak var voteLabel: UILabel!
     
     let networkHelper: NetworkHelperProtocol = NetworkHelper.shared
-    
-    private var gradientLayer: CAGradientLayer?
-    var arranger: ArgumentArrangerProtocol?
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -35,14 +32,10 @@ class MovieCollectionViewCell: UICollectionViewCell {
     }
     
     func configure(data: MovieResult) {
-        guard let vote = arranger?.getFormatteddVote(vote: data.voteAverage ?? 0) else { return }
-        guard let posterPath = data.posterPath else { return }
-        guard let formattedYear = arranger?.formatYear(from: data.releaseDate ?? "") else { return }
-        
         movieNameLabel.text = data.title
-        releaseDateLabel.text = "🗓️\(formattedYear)"
-        movieImage.sd_setImage(with: URL(string: networkHelper.requestImageurl(path: posterPath)))
-        voteLabel.text = "⭐️\(vote)"
+        releaseDateLabel.text = "🗓️\(data.releaseDate?.toFormattedYear() ?? "-")"
+        movieImage.sd_setImage(with: URL(string: "\(NetworkEndPoint.baseImageUrl.rawValue)\(data.posterPath ?? "")"))
+        voteLabel.text = "⭐️\(data.voteAverage?.toFormattedVote() ?? "-")"
     }
     
     func setCellBorder(cell: UICollectionViewCell) {
@@ -51,8 +44,4 @@ class MovieCollectionViewCell: UICollectionViewCell {
         cell.layer.borderColor = UIColor.lightGray.cgColor
     }
 
-    func setRadiusForPoster() {
-        movieImage.layer.cornerRadius = 12
-        movieImage.layer.masksToBounds = true
-    }
 }
